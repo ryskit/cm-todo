@@ -1,4 +1,4 @@
-class JsonWebToken
+class Token
   class << self
     
     ACCESS_TOKEN_SECRET_KEY = Rails.application.secrets.access_token_secret_key

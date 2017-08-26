@@ -2,6 +2,7 @@ class User < ApplicationRecord
   has_secure_password 
   
   has_many :tasks
+  has_many :refresh_tokens
   
   before_save :downcase_email
   before_create :create_uuid
@@ -22,7 +23,7 @@ class User < ApplicationRecord
     end
   
     def create_uuid
-      self.uuid = SecureRandom.uuid
+      self.uuid = SecureRandom.hex(128)
     end
   
 end
