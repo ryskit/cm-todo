@@ -13,7 +13,7 @@ class Api::V1::UsersController < ApplicationController
       render json: {
         :access_token => access_token,
         :refresh_token => refresh_token.token,
-        :refresh_token_exp => refresh_token.expiration,
+        :refresh_token_exp => refresh_token.expiration_at.to_i,
       }
     else
       render json: @user.errors.messages, status: :bad_request

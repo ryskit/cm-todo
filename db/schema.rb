@@ -17,8 +17,8 @@ ActiveRecord::Schema.define(version: 20170825125727) do
 
   create_table "refresh_tokens", force: :cascade do |t|
     t.string "token"
-    t.integer "expiration"
     t.bigint "user_id"
+    t.datetime "expiration_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_refresh_tokens_on_user_id"
