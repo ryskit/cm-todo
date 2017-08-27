@@ -6,9 +6,7 @@ class Api::V1::UsersController < ApplicationController
     if @user.save
       payload = {:uuid => @user.uuid, :name => @user.name}
       access_token = Token.create_access_token(payload) 
-      
-      @user.refresh_tokens.create
-      refresh_token = @user.refresh_tokens[0]
+      refresh_token = @user.refresh_tokens.create
         
       render json: {
         :access_token => access_token,
@@ -16,7 +14,11 @@ class Api::V1::UsersController < ApplicationController
         :refresh_token_exp => refresh_token.expiration_at.to_i,
       }
     else
-      render json: @user.errors.messages, status: :bad_request
+      render json: {
+        status: 'error',
+        error: 'invalid request',
+        messages: @user.errors.messages
+      }, status: :bad_request
     end
   end
 
