@@ -21,7 +21,8 @@ class Token
     
     def decode_access_token(token, algorithm = 'HS512')
       begin
-        JWT.decode token, ACCESS_TOKEN_SECRET_KEY, true, { :algorithm => algorithm }
+        token = JWT.decode token, ACCESS_TOKEN_SECRET_KEY, true, { :algorithm => algorithm }
+        token[0]
       rescue JWT::ExpiredSignature
         nil
       end
