@@ -16,6 +16,7 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
         new_refresh_token = user.refresh_tokens.create
 
         render json: {
+          :token_type => 'bearer',
           :access_token => access_token,
           :refresh_token => new_refresh_token.token,
           :refresh_token_exp => new_refresh_token.expiration_at.to_i,
@@ -36,6 +37,7 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
       payload = {:uuid => @user.uuid, :name => @user.name}
       access_token = Token.create_access_token(payload)
       render json: {
+        :token_type => 'bearer',
         :access_token => access_token,
       }
     else
@@ -62,6 +64,7 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
         new_refresh_token = user.refresh_tokens.create
 
         render json: {
+          :token_type => 'bearer',
           :access_token => access_token,
           :refresh_token => new_refresh_token.token,
           :refresh_token_exp => new_refresh_token.expiration_at.to_i,

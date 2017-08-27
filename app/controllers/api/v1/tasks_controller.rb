@@ -2,9 +2,14 @@ class Api::V1::TasksController < AuthenticationController
   
   before_action :authenticate
   
+  DEFAULT_PAGE_NUM = 1
+  
   def index
-    @tasks = Task.all
-    render json: @tasks, except:[:user_id, :created_at, :updated_at]
+    # @tasks = Task.where("user_id = ? AND checked = ?", @user[:id], false)
+    #               .order(:created_at)
+    #               .page(page_num)
+    @tasks = search_tasks
+    render json: @tasks
   end
 
   def show
@@ -58,4 +63,17 @@ class Api::V1::TasksController < AuthenticationController
       params.require(:task).permit(:title, :content, :due_to, :checked)
     end
   
+    def search_tasks
+      page_num = params[:page] || DEFAULT_PAGE_NUM
+      Task
+        .q(params[:q])
+        .user_id(@user[:id])
+        .title(params[:title])
+        .content(params[:content])
+        .checked(params[:checked])
+        .next_days(params[:next_days])
+        .checked(params[:expired])
+        .order(:created_at)
+        .page(page_num)
+    end
 end
