@@ -21,6 +21,9 @@ module Todo
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.1
 
+    config.paths.add 'lib', eager_load: true
+    config.time_zone = 'Tokyo'
+    config.active_record.default_timezone = :local
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -28,6 +31,7 @@ module Todo
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
+    config.ssl_options = false
     config.api_only = true
   end
 end
