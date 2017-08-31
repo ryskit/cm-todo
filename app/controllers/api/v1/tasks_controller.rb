@@ -5,9 +5,6 @@ class Api::V1::TasksController < AuthenticationController
   DEFAULT_PAGE_NUM = 1
   
   def index
-    # @tasks = Task.where("user_id = ? AND checked = ?", @user[:id], false)
-    #               .order(:created_at)
-    #               .page(page_num)
     @tasks = search_tasks
     render json: @tasks
   end
@@ -66,13 +63,13 @@ class Api::V1::TasksController < AuthenticationController
     def search_tasks
       page_num = params[:page] || DEFAULT_PAGE_NUM
       Task
-        .q(params[:q])
-        .user_id(@user[:id])
-        .title(params[:title])
-        .content(params[:content])
-        .checked(params[:checked])
-        .next_days(params[:next_days])
-        .checked(params[:expired])
+        .by_q(params[:q])
+        .by_user_id(@user[:id])
+        .by_title(params[:title])
+        .by_content(params[:content])
+        .by_checked(params[:checked])
+        .by_next_days(params[:next_days])
+        .by_checked(params[:expired])
         .order(:created_at)
         .page(page_num)
     end
