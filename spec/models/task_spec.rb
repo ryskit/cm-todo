@@ -71,8 +71,8 @@ RSpec.describe Task, type: :model do
         it { is_expected.to include task }
       end
 
-      context 'title, contentに[keyword_not_q]が含まれない場合はタスクは取得できない' do
-        subject { Task.by_q('keyword_not_q') }
+      context 'title, contentに[keyword_no_q]が含まれない場合はタスクは取得できない' do
+        subject { Task.by_q('keyword_no_q') }
         it { is_expected.not_to include task }
       end
     end
@@ -106,11 +106,115 @@ RSpec.describe Task, type: :model do
         it { is_expected.to include task }
       end
 
-      context 'titleに[keyword_title]が含まれていない場合はタスクを取得できない' do
-        subject { Task.by_title('keyword_not_title') }
+      context 'titleに[keyword_not_title]が含まれていない場合はタスクを取得できない' do
+        subject { Task.by_title('keyword_no_title') }
         it { is_expected.not_to include task }
       end
     end
+    
+    describe 'by_content' do
+      let!(:user) { create(:user) }
+      let!(:task) { user.tasks.create({title: 'title keyword_title', content: 'content keyword_content'}) }
+      
+      context 'contentに[keyword_content]が含まれるタスクを取得する' do
+        subject { Task.by_content('keyword_content') }
+        it { is_expected.to include task }
+      end
+      
+      context 'contentに[keyword_no_content]が含れていない場合はタスクを取得できない' do
+        subject { Task.by_content('keyword_no_content') }
+        it { is_expected.not_to include task }
+      end
+    end
+    
+    describe 'by_checked' do
+      let!(:user) { create(:user) }
+      let!(:task) { user.tasks.create({title: 'title keyword_title', content: 'content keyword_content'}) }
+      
+      context 'まだチェックされていない(checked = false)のタスクを取得する' do
+        subject { Task.by_checked(false) }
+        it { is_expected.to include task }
+      end
+      
+      context 'チェックされたタスクは取得できない' do
+        subject { Task.by_checked(true) }
+        it { is_expected.not_to include task }
+      end
+
+      context 'boolean以外を指定された場合はtrueとし、チェックされたタスクがないので取得できない' do
+        subject { Task.by_checked('aaaa') }
+        it { is_expected.not_to include task }
+      end
+    end
+    
+    describe 'by_next_days' do
+      let(:user) { create(:user) }
+      let(:task_5_days_since) { user.tasks.create({
+          title: '現在日時から5日後のタスク',
+          content: 'content keyword_content',
+          due_to: 5.days.since
+        }) 
+      }
+      let(:task_7_days_since) { user.tasks.create({
+          title: '現在日時から7日後のタスク',
+          content: 'content keyword_content',
+          due_to: 7.days.since.end_of_day
+        }) 
+      }
+      
+      context 'タスクの期限が現在時刻から7日後以降のタスクを取得する' do
+        subject { Task.by_next_days(7) }
+        it { is_expected.to include task_5_days_since }
+        it { is_expected.to include task_7_days_since }
+      end
+      
+      context 'タスクの期限が現在時刻から6日後以降のタスクは取得できない' do
+        subject { Task.by_next_days(6) }
+        it { is_expected.to include task_5_days_since }
+        it { is_expected.not_to include task_7_days_since }
+      end
+      
+      context 'by_next_daysにinteger以外を指定するとタスクを取得できない' do
+        subject { Task.by_next_days('aaaa') }
+        it { is_expected.not_to include task_5_days_since }
+        it { is_expected.not_to include task_7_days_since }
+      end
+    end
+    
+    
+    describe 'by_expired' do
+      let!(:user) { create(:user) }
+      let(:task_5_days_before) { user.tasks.create({
+          title: '現在日時から5日前のタスク',
+          content: 'content keyword_content',
+          due_to: 5.days.before
+        }) 
+      }
+      let(:task_7_days_since) { user.tasks.create({
+          title: '現在日時から7日後のタスク',
+          content: 'content keyword_content',
+          due_to: 7.days.since.end_of_day
+        }) 
+      }
+      
+      context '期日が過ぎている(due_to < 現在時刻)タスクを取得する' do
+        subject { Task.by_expired(true) }
+        it { is_expected.to include task_5_days_before }
+        it { is_expected.not_to include task_7_days_since }
+      end
+
+      context '期日が過ぎていない(due_to > 現在時刻)タスクを取得する' do
+        subject { Task.by_expired(false) }
+        it { is_expected.not_to include task_5_days_before }
+        it { is_expected.to include task_7_days_since }
+      end
+
+      context 'by_expiredにboolean以外を指定した場合は、期日が過ぎているタスクを取得する' do
+        subject { Task.by_expired('aaa') }
+        it { is_expected.to include task_5_days_before }
+        it { is_expected.not_to include task_7_days_since }
+      end
+    end   
     
   end
 end

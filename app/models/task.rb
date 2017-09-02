@@ -7,7 +7,7 @@ class Task < ApplicationRecord
   scope :by_content, -> content {where('content LIKE(?)', "%#{content}%") if content.present?}
   scope :by_checked, -> checked {where(checked: !!checked || false)}
   scope :by_next_days, -> next_days {
-    where(due_to: (Time.now.beginning_of_day)..(next_days.days.since) ) if next_days.present?
+    where(due_to: (Time.now.beginning_of_day)..(next_days.to_i.days.since.end_of_day) ) if next_days.present?
   }
   scope :by_expired, -> expired {
     comparison = !!expired ? "<" : ">"
