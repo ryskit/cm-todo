@@ -6,19 +6,25 @@ class Api::V1::TasksController < AuthenticationController
   
   def index
     @tasks = search_tasks
-    render json: @tasks
+    render json: {
+      tasks: @tasks
+    }, status: :ok
   end
 
   def show
     @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id])
-    render json: @task, except: [:user_id], status: :ok
+    render json: {
+      task: @task
+    }, status: :ok
   end
 
   def create
     @task = @user.tasks.create(task_params)
     
     if @task.errors.empty?
-      render json: @task, only: [:title, :content], status: :ok
+      render json: {
+        task: @task
+      }, status: :ok
     else
       render json: {
         status: 'NG',
@@ -31,7 +37,9 @@ class Api::V1::TasksController < AuthenticationController
   def update
     @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id]).first
     if @task.update_attributes(task_params)
-      render json: @task, except: [:user_id], status: :ok
+      render json: {
+        task: @task
+      }, status: :ok
     else
       render json: {
         status: 'NG',
@@ -44,10 +52,12 @@ class Api::V1::TasksController < AuthenticationController
   def destroy
     @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id]).first
     if @task.destroy
-      render json: @task, except: [:user_id], status: :ok
+      render json: {
+        status: :ok
+      }, status: :ok
     else
       render json: {
-        status: 'NG',
+        status: :ng,
         error: 'invalid request',
         messages: @task.error.messages
       }, status: :bad_request
