@@ -1,4 +1,5 @@
 class Api::V1::Auth::UsersAuthorizationController < ApplicationController
+  include ActionController::HttpAuthentication::Token::ControllerMethods
   
   def authorize
     refresh_token = RefreshToken
@@ -31,7 +32,9 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
   end
   
   def refresh_access_token
-    @user = authenticate_refresh_token?(token_params[:refresh_token])
+    authenticate_with_http_token do |token, options|
+      @user = authenticate_refresh_token?(token)
+    end
     
     if @user
       payload = { :uuid => @user.uuid, :name => @user.name }
@@ -79,10 +82,6 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
   end
   
   private
-  
-    def token_params
-      params.require(:token).permit(:refresh_token)
-    end
   
     def user_params
       params.require(:user).permit(:email, :password)
