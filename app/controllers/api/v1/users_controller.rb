@@ -6,7 +6,7 @@ class Api::V1::UsersController < AuthenticationController
     user = User.new(user_params)
     
     if user.save
-      payload = {:uuid => user.uuid, :name => user.name}
+      payload = { :uuid => user.uuid, :name => user.name }
       access_token = Token.create_access_token(payload) 
       refresh_token = user.refresh_tokens.create
         

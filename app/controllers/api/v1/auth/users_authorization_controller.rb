@@ -20,7 +20,7 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
           :access_token => access_token,
           :refresh_token => new_refresh_token.token,
           :refresh_token_exp => new_refresh_token.expiration_at.to_i,
-        }
+        }, status: :ok
       end
     else
       render json: {
@@ -34,12 +34,12 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
     @user = authenticate_refresh_token?(token_params[:refresh_token])
     
     if @user
-      payload = {:uuid => @user.uuid, :name => @user.name}
+      payload = { :uuid => @user.uuid, :name => @user.name }
       access_token = Token.create_access_token(payload)
       render json: {
         :token_type => 'bearer',
         :access_token => access_token,
-      }
+      }, status: :ok
     else
       render json: {
         status: 'NG',
@@ -68,7 +68,7 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
           :access_token => access_token,
           :refresh_token => new_refresh_token.token,
           :refresh_token_exp => new_refresh_token.expiration_at.to_i,
-        }
+        }, status: :ok
       end
     else
       render json: {
