@@ -125,7 +125,7 @@ RSpec.describe User, type: :model do
   describe 'uuid' do
 
     it 'uuidは入力必須であること' do
-      @user.uuid = nil 
+      @user.uuid = ''
       @user.valid?
       expect(@user.errors[:uuid].present?).to be true
     end

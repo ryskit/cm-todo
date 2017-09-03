@@ -21,7 +21,7 @@ class Api::V1::TasksController < AuthenticationController
       render json: @task, only: [:title, :content]
     else
       render json: {
-        status: 'error',
+        status: 'ng',
         error: 'invalid request',
         messages: @task.errors.messages
       }, status: :bad_request
@@ -34,7 +34,7 @@ class Api::V1::TasksController < AuthenticationController
       render json: @task, except: [:user_id]
     else
       render json: {
-        status: 'bad request',
+        status: 'ng',
         error: 'invalid request',
         messages: @task.errors.messages
       }, status: :bad_request
@@ -47,7 +47,7 @@ class Api::V1::TasksController < AuthenticationController
       render json: @task, except: [:user_id]
     else
       render json: {
-        status: 'error',
+        status: 'ng',
         error: 'invalid request',
         messages: @task.error.messages
       }, status: :bad_request

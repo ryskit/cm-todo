@@ -24,7 +24,7 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
       end
     else
       render json: {
-        status: 'error',
+        status: 'ng',
         error: 'unauthorized_client'
       }, status: :unauthorized
     end
@@ -42,7 +42,7 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
       }
     else
       render json: {
-        status: 'error',
+        status: 'ng',
         error: 'unauthorized_client'
       }, status: :unauthorized
     end
