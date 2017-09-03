@@ -24,8 +24,8 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
       end
     else
       render json: {
-        status: 'ng',
-        error: 'unauthorized_client'
+        status: 'NG',
+        error: Rack::Utils::HTTP_STATUS_CODES[401],
       }, status: :unauthorized
     end
   end
@@ -42,8 +42,8 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
       }
     else
       render json: {
-        status: 'ng',
-        error: 'unauthorized_client'
+        status: 'NG',
+        error: Rack::Utils::HTTP_STATUS_CODES[401]
       }, status: :unauthorized
     end
   end
@@ -72,8 +72,8 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
       end
     else
       render json: {
-        status: 'error',
-        error: 'unauthorized_client'
+        status: 'NG',
+        error: Rack::Utils::HTTP_STATUS_CODES[401],
       }, status: :unauthorized
     end
   end
