@@ -150,4 +150,28 @@ RSpec.describe Api::V1::TasksController, type: :controller do
     end
   end
   
+  
+  describe 'DELETE#destory' do
+    
+    let(:update_task_attributes) { attributes_for(:update_task_attributes) }
+    let(:created_task) { @tasks.first }
+    
+    context 'アクセストークンが有効な場合' do
+      it 'タスクを削除することができる' do
+        delete :destroy, params: { id: created_task['id'] }
+        expect(response).to have_http_status(:ok)
+      end
+    end
+    
+    context 'アクセストークンが無効な場合' do
+      it 'authorized errorとなる' do
+        controller.request.headers['Authorization'] = 'Bearer aaaaaaaaaaaaaaaaaaaaaaaaa'
+        delete :destroy, params: { id: created_task['id'] }
+        expect(response).to have_http_status(:unauthorized)
+
+        res_body = JSON.parse(response.body)
+        expect(res_body['error']).to eq Rack::Utils::HTTP_STATUS_CODES[401]
+      end
+    end
+  end
 end
