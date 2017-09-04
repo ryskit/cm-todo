@@ -6,7 +6,7 @@ class RefreshToken < ApplicationRecord
   private
     
     def create_refresh_token
-      self.token = SecureRandom.hex(64)
+      self.token = SecureRandom.hex(128)
     end
   
     def create_expiration_at

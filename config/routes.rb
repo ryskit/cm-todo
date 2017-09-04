@@ -4,7 +4,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       
       resources :tasks
-      resources :users, only: [:create]
+      post '/signup', to: 'users#create'
       
       namespace :auth do
         post '/authorize', to: 'users_authorization#authorize'

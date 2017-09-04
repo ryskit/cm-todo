@@ -5,27 +5,33 @@ class Api::V1::TasksController < AuthenticationController
   DEFAULT_PAGE_NUM = 1
   
   def index
-    # @tasks = Task.where("user_id = ? AND checked = ?", @user[:id], false)
-    #               .order(:created_at)
-    #               .page(page_num)
     @tasks = search_tasks
-    render json: @tasks
+    render json: { tasks: @tasks }, status: :ok
   end
 
   def show
     @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id])
-    render json: @task, except: [:user_id]
+    if @task
+      render json: { task: @task }, status: :ok
+    else
+      render json: { 
+        status: 'NG',
+        code: 404,
+        error: Rack::Utils::HTTP_STATUS_CODES[404]
+      }, status: :not_found
+    end
   end
 
   def create
     @task = @user.tasks.create(task_params)
     
     if @task.errors.empty?
-      render json: @task, only: [:title, :content]
+      render json: { task: @task }, status: :ok
     else
       render json: {
-        status: 'error',
-        error: 'invalid request',
+        status: 'NG',
+        code: 400,
+        error: Rack::Utils::HTTP_STATUS_CODES[400],
         messages: @task.errors.messages
       }, status: :bad_request
     end
@@ -34,11 +40,12 @@ class Api::V1::TasksController < AuthenticationController
   def update
     @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id]).first
     if @task.update_attributes(task_params)
-      render json: @task, except: [:user_id]
+      render json: { task: @task }, status: :ok
     else
       render json: {
-        status: 'bad request',
-        error: 'invalid request',
+        status: 'NG',
+        code: 400,
+        error: Rack::Utils::HTTP_STATUS_CODES[400],
         messages: @task.errors.messages
       }, status: :bad_request
     end
@@ -47,11 +54,11 @@ class Api::V1::TasksController < AuthenticationController
   def destroy
     @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id]).first
     if @task.destroy
-      render json: @task, except: [:user_id]
+      render json: { status: :ok }, status: :ok
     else
       render json: {
-        status: 'error',
-        error: 'invalid request',
+        status: :ng,
+        error: Rack::Utils::HTTP_STATUS_CODES[400],
         messages: @task.error.messages
       }, status: :bad_request
     end
@@ -66,13 +73,13 @@ class Api::V1::TasksController < AuthenticationController
     def search_tasks
       page_num = params[:page] || DEFAULT_PAGE_NUM
       Task
-        .q(params[:q])
-        .user_id(@user[:id])
-        .title(params[:title])
-        .content(params[:content])
-        .checked(params[:checked])
-        .next_days(params[:next_days])
-        .checked(params[:expired])
+        .by_q(params[:q])
+        .by_user_id(@user[:id])
+        .by_title(params[:title])
+        .by_content(params[:content])
+        .by_checked(params[:checked])
+        .by_next_days(params[:next_days])
+        .by_checked(params[:expired])
         .order(:created_at)
         .page(page_num)
     end

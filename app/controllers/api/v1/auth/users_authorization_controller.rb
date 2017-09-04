@@ -1,4 +1,5 @@
 class Api::V1::Auth::UsersAuthorizationController < ApplicationController
+  include ActionController::HttpAuthentication::Token::ControllerMethods
   
   def authorize
     refresh_token = RefreshToken
@@ -20,30 +21,34 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
           :access_token => access_token,
           :refresh_token => new_refresh_token.token,
           :refresh_token_exp => new_refresh_token.expiration_at.to_i,
-        }
+        }, status: :ok
       end
     else
       render json: {
-        status: 'error',
-        error: 'unauthorized_client'
+        status: 'NG',
+        code: 401,
+        error: Rack::Utils::HTTP_STATUS_CODES[401],
       }, status: :unauthorized
     end
   end
   
   def refresh_access_token
-    @user = authenticate_refresh_token?(token_params[:refresh_token])
+    authenticate_with_http_token do |token, options|
+      @user = authenticate_refresh_token?(token)
+    end
     
     if @user
-      payload = {:uuid => @user.uuid, :name => @user.name}
+      payload = { :uuid => @user.uuid, :name => @user.name }
       access_token = Token.create_access_token(payload)
       render json: {
         :token_type => 'bearer',
         :access_token => access_token,
-      }
+      }, status: :ok
     else
       render json: {
-        status: 'error',
-        error: 'unauthorized_client'
+        status: 'NG',
+        code: 401,
+        error: Rack::Utils::HTTP_STATUS_CODES[401]
       }, status: :unauthorized
     end
   end
@@ -68,21 +73,18 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
           :access_token => access_token,
           :refresh_token => new_refresh_token.token,
           :refresh_token_exp => new_refresh_token.expiration_at.to_i,
-        }
+        }, status: :ok
       end
     else
       render json: {
-        status: 'error',
-        error: 'unauthorized_client'
+        status: 'NG',
+        code: 401,
+        error: Rack::Utils::HTTP_STATUS_CODES[401],
       }, status: :unauthorized
     end
   end
   
   private
-  
-    def token_params
-      params.require(:token).permit(:refresh_token)
-    end
   
     def user_params
       params.require(:user).permit(:email, :password)
