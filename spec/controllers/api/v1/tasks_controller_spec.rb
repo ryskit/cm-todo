@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::TasksController, type: :controller do
   
   before :each do
-    @user = create(:user_params)
+    @user = create(:user)
     payload = { :uuid => @user.uuid, :name => @user.name }
     access_token = Token.create_access_token(payload)
     refresh_token = @user.refresh_tokens.create
@@ -13,38 +13,63 @@ RSpec.describe Api::V1::TasksController, type: :controller do
       refresh_token: refresh_token.token,
       refresh_token_exp: refresh_token.expiration_at.to_i,
     }
+    
+    
+    @tasks = []
+    50.times{
+      task = @user.tasks.create(attributes_for(:update_task_attributes))
+      @tasks.push(task)
+    }
 
+    controller.request.headers['Authorization'] = "Bearer #{@user_tokens[:access_token]}"
+    controller.request.headers['CONTENT_TYPE'] = 'application/json'
   end
   
+  describe 'GET#index' do
+    describe 'アクセストークンが有効な場合' do
+      
+      it 'タスクの一覧を取得する' do
+        get :index, params: {}
+        expect(response).to have_http_status(:ok)
+        res_body = JSON.parse(response.body)
+        expect(res_body['tasks'].size).to eq @tasks.size
+      end
+    end
+    
+    describe 'アクセストークンが無効な場合' do
+      it 'unauthorized errorとなる' do
+        controller.request.headers['Authorization'] = 'Bearer aaaaaaaaaaaaaaaaaaaaaaaaa'
+        get :index, params: {}
+        expect(response).to have_http_status(:unauthorized)
+        
+        res_body = JSON.parse(response.body)
+        expect(res_body['error']).to eq Rack::Utils::HTTP_STATUS_CODES[401]
+      end
+    end
+  end
   
   describe 'POST#create' do
 
-    let(:valid_task_params) { { task: attributes_for(:valid_task_params) } }
-    let(:invalid_task_params) { { task: attributes_for(:invalid_task_params) } }
+    let(:valid_task_attributes) { { task: attributes_for(:valid_task_attributes) } }
+    let(:invalid_task_attributes) { { task: attributes_for(:invalid_task_attributes) } }
 
     describe 'アクセストークンが有効な場合' do
       
       context '有効なパラメータの場合' do
-        it 'taskを新規作成' do
-          controller.request.headers['Authorization'] = "Bearer #{@user_tokens[:access_token]}"
-          controller.request.headers['CONTENT_TYPE'] = 'application/json'
-
+        it 'タスクを新規作成' do
           expect {
-            post :create, params: valid_task_params
+            post :create, params: valid_task_attributes
           }.to change(Task, :count).by(1)
           
           res_body = JSON.parse(response.body)
-          expect(res_body['title']).to eq valid_task_params[:title]
-          expect(res_body['content']).to eq valid_task_params[:content]
+          expect(res_body['title']).to eq valid_task_attributes[:title]
+          expect(res_body['content']).to eq valid_task_attributes[:content]
         end
       end
 
       context '無効なパラメータの場合' do
         it 'タイトルが空の場合はエラーとなる' do
-          controller.request.headers['Authorization'] = "Bearer #{@user_tokens[:access_token]}"
-          controller.request.headers['CONTENT_TYPE'] = 'application/json'
-
-          post :create, params: invalid_task_params
+          post :create, params: invalid_task_attributes
 
           res_body = JSON.parse(response.body)
           expect(res_body['status']).to eq 'NG'
@@ -60,11 +85,43 @@ RSpec.describe Api::V1::TasksController, type: :controller do
       
       it 'タスクの新規作成がエラーになる' do
         controller.request.headers['Authorization'] = 'Bearer aaaaaaaaaaaaaaaaaaaaaaaaa'
-        controller.request.headers['CONTENT_TYPE'] = 'application/json'
-        post :create, params: valid_task_params
+        post :create, params: valid_task_attributes
         expect(response).to have_http_status(:unauthorized)
       end
     end
-    
   end
+  
+  
+  describe 'PATCH#update' do
+    
+    let(:valid_task_attributes) { { task: attributes_for(:valid_task_attributes) } }
+    let(:invalid_task_attributes) { { task: attributes_for(:invalid_task_attributes) } }
+    let(:created_task) do
+      post :create, params: valid_task_attributes
+      res_body = JSON.parse(response.body)
+      res_body['task']
+    end
+    
+    describe 'アクセストークンが有効な場合' do
+      let(:update_task_attributes) { attributes_for(:update_task_attributes) }
+      
+      context '有効なパラメータの場合' do
+        it 'タスクを更新する'do
+          patch :update, params: { id: created_task['id'], task: update_task_attributes }
+          res_body = JSON.parse(response.body)
+          
+          # expect(res_body['task']['id']).to eq created_task['id']
+          # expect(res_body['task']['title']).not_to eq created_task['title']
+          # expect(res_body['task']['content']).not_to eq created_task['content']
+          # expect(res_body['task']['due_to']).to be true 
+        end
+      end
+    end
+    
+    describe 'アクセストークンが無効な場合' do
+      it 'タスクの更新がエラーになる' do
+      end
+    end
+  end
+  
 end
