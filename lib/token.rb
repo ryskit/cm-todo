@@ -23,7 +23,7 @@ class Token
       begin
         token = JWT.decode token, ACCESS_TOKEN_SECRET_KEY, true, { :algorithm => algorithm }
         token[0]
-      rescue JWT::ExpiredSignature
+      rescue JWT::ExpiredSignature, JWT::DecodeError => e
         nil
       end
     end

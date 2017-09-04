@@ -5,8 +5,8 @@ class AuthenticationController < ApplicationController
   
     def authenticate
       @decode_access_token = authenticate_access_token
-      respond_unauthorized unless @decode_access_token
-      @user = User.find_by(uuid: @decode_access_token['uuid'])
+      return respond_unauthorized unless @decode_access_token
+      @user = User.find_by(uuid: @decode_access_token['uuid']) if @decode_access_token
     end
     
     def authenticate_access_token
@@ -17,8 +17,9 @@ class AuthenticationController < ApplicationController
 
     def respond_unauthorized
       render json: {
-        status: 'unauthorized',
-        error: 'unauthorized_client'
+        status: 'NG',
+        code: 401,
+        error: Rack::Utils::HTTP_STATUS_CODES[401]
       }, status: :unauthorized
     end
 end

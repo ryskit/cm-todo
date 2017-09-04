@@ -1,4 +1,5 @@
 class Task < ApplicationRecord
+  
   belongs_to :user
   
   scope :by_q, -> q { where('title LIKE(?) OR content LIKE(?)', "%#{q}%", "%#{q}%") if q.present? }

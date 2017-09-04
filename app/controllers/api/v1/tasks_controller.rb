@@ -28,7 +28,8 @@ class Api::V1::TasksController < AuthenticationController
     else
       render json: {
         status: 'NG',
-        error: 'invalid request',
+        code: 400,
+        error: Rack::Utils::HTTP_STATUS_CODES[400],
         messages: @task.errors.messages
       }, status: :bad_request
     end
@@ -43,7 +44,8 @@ class Api::V1::TasksController < AuthenticationController
     else
       render json: {
         status: 'NG',
-        error: 'invalid request',
+        code: 400,
+        error: Rack::Utils::HTTP_STATUS_CODES[400],
         messages: @task.errors.messages
       }, status: :bad_request
     end
@@ -58,7 +60,7 @@ class Api::V1::TasksController < AuthenticationController
     else
       render json: {
         status: :ng,
-        error: 'invalid request',
+        error: Rack::Utils::HTTP_STATUS_CODES[400],
         messages: @task.error.messages
       }, status: :bad_request
     end
