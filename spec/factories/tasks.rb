@@ -23,7 +23,7 @@ FactoryGirl.define do
   factory :update_task_attributes, class: Task do 
     sequence(:title) { |n| "updated title #{n}" }
     sequence(:content) { |n| "updated content #{n}" }
-    sequence(:due_to) { |n| n.day.since.beginning_of_day }
+    due_to 1000.day.since.beginning_of_day
   end
   
 end

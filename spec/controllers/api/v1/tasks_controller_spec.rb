@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::TasksController, type: :controller do
   
+  TASK_SIZE = 51
+  
   before :each do
     @user = create(:user)
     payload = { :uuid => @user.uuid, :name => @user.name }
@@ -16,7 +18,7 @@ RSpec.describe Api::V1::TasksController, type: :controller do
     
     
     @tasks = []
-    50.times{
+    TASK_SIZE.times{
       task = @user.tasks.create(attributes_for(:update_task_attributes))
       @tasks.push(task)
     }
@@ -32,7 +34,8 @@ RSpec.describe Api::V1::TasksController, type: :controller do
         get :index, params: {}
         expect(response).to have_http_status(:ok)
         res_body = JSON.parse(response.body)
-        expect(res_body['tasks'].size).to eq @tasks.size
+        # 現状50件まで
+        expect(res_body['tasks'].size).not_to eq TASK_SIZE
       end
     end
     
@@ -94,32 +97,32 @@ RSpec.describe Api::V1::TasksController, type: :controller do
   
   describe 'PATCH#update' do
     
-    let(:valid_task_attributes) { { task: attributes_for(:valid_task_attributes) } }
-    let(:invalid_task_attributes) { { task: attributes_for(:invalid_task_attributes) } }
-    let(:created_task) do
-      post :create, params: valid_task_attributes
-      res_body = JSON.parse(response.body)
-      res_body['task']
-    end
+    let(:update_task_attributes) { attributes_for(:update_task_attributes) }
+    let(:created_task) { @tasks.first }
     
     describe 'アクセストークンが有効な場合' do
-      let(:update_task_attributes) { attributes_for(:update_task_attributes) }
       
       context '有効なパラメータの場合' do
         it 'タスクを更新する'do
           patch :update, params: { id: created_task['id'], task: update_task_attributes }
-          res_body = JSON.parse(response.body)
           
-          # expect(res_body['task']['id']).to eq created_task['id']
-          # expect(res_body['task']['title']).not_to eq created_task['title']
-          # expect(res_body['task']['content']).not_to eq created_task['content']
-          # expect(res_body['task']['due_to']).to be true 
+          res_body = JSON.parse(response.body)
+          expect(res_body['task']['id']).to eq created_task['id']
+          expect(res_body['task']['title']).not_to eq created_task['title']
+          expect(res_body['task']['content']).not_to eq created_task['content']
+          expect(res_body['task']['due_to']).to be >= created_task['due_to']
         end
       end
     end
     
     describe 'アクセストークンが無効な場合' do
-      it 'タスクの更新がエラーになる' do
+      it 'unauthorized errorとなる' do
+        controller.request.headers['Authorization'] = 'Bearer aaaaaaaaaaaaaaaaaaaaaaaaa'
+        patch :update, params: { id: created_task['id'], task: update_task_attributes }
+        expect(response).to have_http_status(:unauthorized)
+
+        res_body = JSON.parse(response.body)
+        expect(res_body['error']).to eq Rack::Utils::HTTP_STATUS_CODES[401]
       end
     end
   end
