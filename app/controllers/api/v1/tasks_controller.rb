@@ -6,25 +6,27 @@ class Api::V1::TasksController < AuthenticationController
   
   def index
     @tasks = search_tasks
-    render json: {
-      tasks: @tasks
-    }, status: :ok
+    render json: { tasks: @tasks }, status: :ok
   end
 
   def show
     @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id])
-    render json: {
-      task: @task
-    }, status: :ok
+    if @task
+      render json: { task: @task }, status: :ok
+    else
+      render json: { 
+        status: 'NG',
+        code: 404,
+        error: Rack::Utils::HTTP_STATUS_CODES[404]
+      }, status: :not_found
+    end
   end
 
   def create
     @task = @user.tasks.create(task_params)
     
     if @task.errors.empty?
-      render json: {
-        task: @task
-      }, status: :ok
+      render json: { task: @task }, status: :ok
     else
       render json: {
         status: 'NG',
@@ -38,9 +40,7 @@ class Api::V1::TasksController < AuthenticationController
   def update
     @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id]).first
     if @task.update_attributes(task_params)
-      render json: {
-        task: @task
-      }, status: :ok
+      render json: { task: @task }, status: :ok
     else
       render json: {
         status: 'NG',
@@ -54,9 +54,7 @@ class Api::V1::TasksController < AuthenticationController
   def destroy
     @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id]).first
     if @task.destroy
-      render json: {
-        status: :ok
-      }, status: :ok
+      render json: { status: :ok }, status: :ok
     else
       render json: {
         status: :ng,

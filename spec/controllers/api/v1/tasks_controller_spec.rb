@@ -28,8 +28,7 @@ RSpec.describe Api::V1::TasksController, type: :controller do
   end
   
   describe 'GET#index' do
-    describe 'アクセストークンが有効な場合' do
-      
+    context 'アクセストークンが有効な場合' do
       it 'タスクの一覧を取得する' do
         get :index, params: {}
         expect(response).to have_http_status(:ok)
@@ -39,7 +38,7 @@ RSpec.describe Api::V1::TasksController, type: :controller do
       end
     end
     
-    describe 'アクセストークンが無効な場合' do
+    context 'アクセストークンが無効な場合' do
       it 'unauthorized errorとなる' do
         controller.request.headers['Authorization'] = 'Bearer aaaaaaaaaaaaaaaaaaaaaaaaa'
         get :index, params: {}
@@ -47,6 +46,32 @@ RSpec.describe Api::V1::TasksController, type: :controller do
         
         res_body = JSON.parse(response.body)
         expect(res_body['error']).to eq Rack::Utils::HTTP_STATUS_CODES[401]
+      end
+    end
+  end
+  
+  describe 'GET#show' do
+
+    let(:update_task_attributes) { attributes_for(:update_task_attributes) }
+    let(:created_task) { @tasks.first }
+    
+    describe 'アクセストークンが有効な場合' do
+      it '特定のタスクを取得する' do
+        get :show, params: { id: created_task['id'] }
+        expect(response).to have_http_status(:ok)
+        res_body = JSON.parse(response.body)
+
+        expect(res_body['task'][0]['id']).to eq created_task[:id]
+        expect(res_body['task'][0]['title']).to eq created_task[:title]
+        expect(res_body['task'][0]['content']).to eq created_task['content']
+      end
+    end
+    
+    describe 'アクセストークンが無効の場合' do
+      it 'unauthorized errorとなる' do
+        controller.request.headers['Authorization'] = 'Bearer aaaaaaaaaaaaaaaaaaaaaaaaa'
+        get :show, params: { id: created_task['id'] }
+        expect(response).to have_http_status(:unauthorized)
       end
     end
   end
@@ -85,8 +110,7 @@ RSpec.describe Api::V1::TasksController, type: :controller do
     end
 
     describe 'アクセストークンが無効な場合' do
-      
-      it 'タスクの新規作成がエラーになる' do
+      it 'unauthorized errorとなる' do
         controller.request.headers['Authorization'] = 'Bearer aaaaaaaaaaaaaaaaaaaaaaaaa'
         post :create, params: valid_task_attributes
         expect(response).to have_http_status(:unauthorized)
@@ -101,7 +125,6 @@ RSpec.describe Api::V1::TasksController, type: :controller do
     let(:created_task) { @tasks.first }
     
     describe 'アクセストークンが有効な場合' do
-      
       context '有効なパラメータの場合' do
         it 'タスクを更新する'do
           patch :update, params: { id: created_task['id'], task: update_task_attributes }
