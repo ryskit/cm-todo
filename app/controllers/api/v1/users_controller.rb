@@ -19,6 +19,7 @@ class Api::V1::UsersController < AuthenticationController
     else
       render json: {
         status: 'NG',
+        code: 400,
         error: Rack::Utils::HTTP_STATUS_CODES[400],
         messages: user.errors.messages
       }, status: :bad_request
