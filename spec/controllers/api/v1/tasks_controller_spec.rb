@@ -158,7 +158,9 @@ RSpec.describe Api::V1::TasksController, type: :controller do
     
     context 'アクセストークンが有効な場合' do
       it 'タスクを削除することができる' do
-        delete :destroy, params: { id: created_task['id'] }
+        expect do
+          delete :destroy, params: { id: created_task['id'] }
+        end.to change(Task, :count).by(-1)
         expect(response).to have_http_status(:ok)
       end
     end

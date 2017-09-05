@@ -138,12 +138,12 @@ RSpec.describe Task, type: :model do
       
       context 'チェックされたタスクは取得できない' do
         subject { Task.by_checked(true) }
-        it { is_expected.not_to include task }
+        it { is_expected.not_to be include task }
       end
 
       context 'boolean以外を指定された場合はtrueとし、チェックされたタスクがないので取得できない' do
         subject { Task.by_checked('aaaa') }
-        it { is_expected.not_to include task }
+        it { is_expected.not_to be include task }
       end
     end
     
