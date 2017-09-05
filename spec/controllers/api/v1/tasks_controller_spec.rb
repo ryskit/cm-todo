@@ -145,6 +145,7 @@ RSpec.describe Api::V1::TasksController, type: :controller do
         expect(response).to have_http_status(:unauthorized)
 
         res_body = JSON.parse(response.body)
+        expect(res_body['status']).to eq 'NG'
         expect(res_body['error']).to eq Rack::Utils::HTTP_STATUS_CODES[401]
       end
     end
@@ -172,6 +173,7 @@ RSpec.describe Api::V1::TasksController, type: :controller do
         expect(response).to have_http_status(:unauthorized)
 
         res_body = JSON.parse(response.body)
+        expect(res_body['status']).to eq 'NG'
         expect(res_body['error']).to eq Rack::Utils::HTTP_STATUS_CODES[401]
       end
     end

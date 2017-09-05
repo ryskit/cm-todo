@@ -57,7 +57,7 @@ class Api::V1::TasksController < AuthenticationController
       render json: { status: :ok }, status: :ok
     else
       render json: {
-        status: :ng,
+        status: 'NG',
         error: Rack::Utils::HTTP_STATUS_CODES[400],
         messages: @task.error.messages
       }, status: :bad_request
