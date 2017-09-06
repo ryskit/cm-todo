@@ -40,7 +40,7 @@ class Api::V1::TasksController < AuthenticationController
   def update
     @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id]).first
     if @task.update_attributes(task_params)
-      render json: { task: @task }, status: :ok
+      render json: { task: @task }, status: 200
     else
       render json: {
         status: 'NG',
@@ -54,7 +54,7 @@ class Api::V1::TasksController < AuthenticationController
   def destroy
     @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id]).first
     if @task.destroy
-      render json: { status: :ok }, status: :ok
+      render json: {}, status: 204
     else
       render json: {
         status: 'NG',
@@ -76,8 +76,6 @@ class Api::V1::TasksController < AuthenticationController
       Task
         .by_q(params[:q])
         .by_user_id(@user[:id])
-        .by_title(params[:title])
-        .by_content(params[:content])
         .by_checked(params[:checked])
         .by_next_days(params[:next_days])
         .by_checked(params[:expired])

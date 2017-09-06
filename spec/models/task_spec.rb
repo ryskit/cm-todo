@@ -20,15 +20,15 @@ RSpec.describe Task, type: :model do
       expect(task.errors[:title].present?).to be true
     end
     
-    it 'titleは最大50文字入力できる' do
+    it 'titleは最大200文字入力できる' do
       user = create(:user)
       task = build(:task)
       task.user_id = user.id
-      task.title = 'a' * 51
+      task.title = 'a' * 201
       task.valid?
       expect(task.errors[:title].present?).to be true
       
-      task.title = 'a' * 50
+      task.title = 'a' * 200
       task.valid?
       expect(task.errors[:title].present?).to be false
     end
@@ -97,36 +97,6 @@ RSpec.describe Task, type: :model do
       end
     end
 
-    describe 'by_title' do
-      let!(:user) { create(:user) }
-      let!(:task) { user.tasks.create({title: 'title keyword_title', content: 'content keyword_content'}) }
-      
-      context 'titleに[keyword_title]が含まれるタスクを取得する' do
-        subject { Task.by_title('keyword_title') }
-        it { is_expected.to include task }
-      end
-
-      context 'titleに[keyword_not_title]が含まれていない場合はタスクを取得できない' do
-        subject { Task.by_title('keyword_no_title') }
-        it { is_expected.not_to include task }
-      end
-    end
-    
-    describe 'by_content' do
-      let!(:user) { create(:user) }
-      let!(:task) { user.tasks.create({title: 'title keyword_title', content: 'content keyword_content'}) }
-      
-      context 'contentに[keyword_content]が含まれるタスクを取得する' do
-        subject { Task.by_content('keyword_content') }
-        it { is_expected.to include task }
-      end
-      
-      context 'contentに[keyword_no_content]が含れていない場合はタスクを取得できない' do
-        subject { Task.by_content('keyword_no_content') }
-        it { is_expected.not_to include task }
-      end
-    end
-    
     describe 'by_checked' do
       let!(:user) { create(:user) }
       let!(:task) { user.tasks.create({title: 'title keyword_title', content: 'content keyword_content'}) }

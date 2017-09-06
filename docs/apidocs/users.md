@@ -1,4 +1,4 @@
-## タスクのエンドポイント [/v1/tasks{?}]
+## ユーザーの新規作成 [/v1/signup]
 
 ### ユーザ登録 [POST]
 
@@ -20,7 +20,7 @@
             + password: abc123 (string, required, minimum: 6) - パスワード
             + password_confirmation: abc123 (string, required, minimum: 6) - 確認用パスワード
 
-+ Response  (application/json)
++ Response 201 (application/json)
 
    + Attributes
         + status: OK 

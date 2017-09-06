@@ -127,7 +127,10 @@ RSpec.describe Api::V1::TasksController, type: :controller do
     describe 'アクセストークンが有効な場合' do
       context '有効なパラメータの場合' do
         it 'タスクを更新する'do
-          patch :update, params: { id: created_task['id'], task: update_task_attributes }
+          expect do
+            patch :update, params: { id: created_task['id'], task: update_task_attributes }
+          end.to change(Task, :count).by(0)
+          expect(response).to have_http_status(200)
           
           res_body = JSON.parse(response.body)
           expect(res_body['task']['id']).to eq created_task['id']
@@ -162,7 +165,9 @@ RSpec.describe Api::V1::TasksController, type: :controller do
         expect do
           delete :destroy, params: { id: created_task['id'] }
         end.to change(Task, :count).by(-1)
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(204)
+        res_body = JSON.parse(response.body)
+        expect(res_body.blank?).to be true
       end
     end
     
