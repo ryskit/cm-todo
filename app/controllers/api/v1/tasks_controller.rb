@@ -11,15 +11,15 @@ class Api::V1::TasksController < AuthenticationController
   end
 
   def show
-    @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id])
-    if @task
+    @task = Task.where('id = ? AND user_id = ?', params[:id], @user[:id])
+    if @task && @task.present?
       render json: { task: @task }, status: :ok
     else
       render json: { 
         status: 'NG',
         code: 404,
         error: Rack::Utils::HTTP_STATUS_CODES[404]
-      }, status: :not_found
+      }, status: 404
     end
   end
 

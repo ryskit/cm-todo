@@ -26,4 +26,10 @@ FactoryGirl.define do
     due_to 1000.day.since.beginning_of_day
   end
   
+  factory :update_invalid_task_attributes, class: Task do 
+    title nil
+    sequence(:content) { |n| "updated content #{n}" }
+    due_to 1000.day.since.beginning_of_day
+  end
+  
 end

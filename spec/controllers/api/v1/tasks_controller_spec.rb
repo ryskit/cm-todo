@@ -65,6 +65,11 @@ RSpec.describe Api::V1::TasksController, type: :controller do
         expect(res_body['task'][0]['title']).to eq created_task[:title]
         expect(res_body['task'][0]['content']).to eq created_task['content']
       end
+      
+      it 'タスクのIDが存在しない、または、自身のタスクのIDをパラメータとして渡した場合、エラーが返る' do
+        get :show, params: { id: 0 }
+        expect(response).to have_http_status(404)
+      end
     end
     
     describe 'アクセストークンが無効の場合' do
@@ -122,6 +127,7 @@ RSpec.describe Api::V1::TasksController, type: :controller do
   describe 'PATCH#update' do
     
     let(:update_task_attributes) { attributes_for(:update_task_attributes) }
+    let(:update_invalid_task_attributes) { attributes_for(:update_invalid_task_attributes) }
     let(:created_task) { @tasks.first }
     
     describe 'アクセストークンが有効な場合' do
@@ -139,13 +145,24 @@ RSpec.describe Api::V1::TasksController, type: :controller do
           expect(res_body['task']['due_to']).to be >= created_task['due_to']
         end
         
-        it 'タスクのIDが存在しない、または、タスクにセットした値にバリデーションエラーがある場合、エラーが返される'do
+        it 'タスクのIDが存在しない、または自身のタスクのIDでない場合、エラーが返される'do
           expect do
             patch :update, params: { id: 0, task: update_task_attributes }
           end.to change(Task, :count).by(0)
           expect(response).to have_http_status(400)
           
           res_body = JSON.parse(response.body)
+          expect(res_body['messages'].nil?).to be true
+        end
+        
+        it 'リクエストしたタスクの値がバリデーションエラーとなった場合、エラーが返される'do
+          expect do
+            patch :update, params: { id: created_task[:id], task: update_invalid_task_attributes }
+          end.to change(Task, :count).by(0)
+          expect(response).to have_http_status(400)
+          
+          res_body = JSON.parse(response.body)
+          expect(res_body['messages'].present?).to be true
         end
       end
     end
