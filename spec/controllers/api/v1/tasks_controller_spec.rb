@@ -138,6 +138,15 @@ RSpec.describe Api::V1::TasksController, type: :controller do
           expect(res_body['task']['content']).not_to eq created_task['content']
           expect(res_body['task']['due_to']).to be >= created_task['due_to']
         end
+        
+        it 'タスクのIDが存在しない、または、タスクにセットした値にバリデーションエラーがある場合、エラーが返される'do
+          expect do
+            patch :update, params: { id: 0, task: update_task_attributes }
+          end.to change(Task, :count).by(0)
+          expect(response).to have_http_status(400)
+          
+          res_body = JSON.parse(response.body)
+        end
       end
     end
     
@@ -168,6 +177,15 @@ RSpec.describe Api::V1::TasksController, type: :controller do
         expect(response).to have_http_status(204)
         res_body = JSON.parse(response.body)
         expect(res_body.blank?).to be true
+      end
+      
+      it 'タスクのIDが存在しない、または自身が作成したタスクのIDでない場合エラーとなる' do
+        expect do
+          delete :destroy, params: { id: 0 }
+        end.to change(Task, :count).by(0)
+        expect(response).to have_http_status(400)
+        res_body = JSON.parse(response.body)
+        expect(res_body.blank?).to be false
       end
     end
     

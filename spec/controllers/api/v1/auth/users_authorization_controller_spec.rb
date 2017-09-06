@@ -51,21 +51,46 @@ RSpec.describe Api::V1::Auth::UsersAuthorizationController, type: :controller do
     
     context '無効なパラメータの場合' do
       
-      let(:user_params) do
+      let(:user_wrong_email_params) do
         {
           user: {
-            email: @user[:email],
-            password: 'mispassword'
+            email: 'wronguser@example.com',
+            password: 'password'
           }
         }
       end
       
-      it '認証に失敗する' do
+      let(:user_wrong_password_params) do
+        {
+          user: {
+            email: @user[:email],
+            password: 'wrongpassword'
+          }
+        }
+      end
+      
+      it '認証に失敗する(メールアドレスが間違っている場合)' do
         
         # 同じ時刻でaccess_tokenが再生成されないようにするため
         sleep(1)
         
-        post :authorize, params: user_params
+        post :authorize, params: user_wrong_email_params
+        expect(response).to have_http_status(:unauthorized)
+        
+        res_body = JSON.parse(response.body)
+        expect(res_body['status']).to eq 'NG'
+        expect(res_body['error']).to eq Rack::Utils::HTTP_STATUS_CODES[401]
+        expect(res_body['access_token'].nil?).to be true
+        expect(res_body['refresh_token'].nil?).to be true
+        expect(res_body['refresh_token_exp'].nil?).to be true
+      end
+      
+      it '認証に失敗する(パスワードが間違っている場合)' do
+        
+        # 同じ時刻でaccess_tokenが再生成されないようにするため
+        sleep(1)
+        
+        post :authorize, params: user_wrong_password_params
         expect(response).to have_http_status(:unauthorized)
         
         res_body = JSON.parse(response.body)

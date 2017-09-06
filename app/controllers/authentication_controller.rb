@@ -5,7 +5,7 @@ class AuthenticationController < ApplicationController
   
     def authenticate
       @decode_access_token = authenticate_access_token
-      return respond_unauthorized unless @decode_access_token
+      return render_unauthorized unless @decode_access_token
       @user = User.find_by(uuid: @decode_access_token['uuid']) if @decode_access_token
     end
     
@@ -15,7 +15,7 @@ class AuthenticationController < ApplicationController
       end
     end
 
-    def respond_unauthorized
+    def render_unauthorized
       render json: {
         status: 'NG',
         code: 401,
