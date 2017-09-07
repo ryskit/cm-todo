@@ -95,10 +95,10 @@ RSpec.describe User, type: :model do
     end
     
     it 'メールアドレスの英字は小文字で保存されること' do
-      upper_email = "RYSKIT@EXAMPLE.COM"
+      upper_email = "EXAMPLE@EXAMPLE.COM"
       @user[:email] = upper_email
       @user.save
-      expect(@user[:email]).to eq 'ryskit@example.com'
+      expect(@user[:email]).to eq 'example@example.com'
     end
   end
   
@@ -145,8 +145,8 @@ RSpec.describe User, type: :model do
     it 'uuidはユニークであること' do
       @user.save
       another_user = User.new(
-        name: 'ryskit2',
-        email: 'ryskit2@example.com',
+        name: 'example2',
+        email: 'example2@example.com',
         password: 'password',
         password_confirmation: 'password',
         uuid: @user.uuid

@@ -9,8 +9,8 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       let(:params) do
         {
           user: {
-            name: 'ryskit',
-            email: 'ryskit@example.com',
+            name: 'example',
+            email: 'example@example.com',
             password: 'password',
             password_confirmation: 'password'
           }
@@ -38,7 +38,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         {
           user: {
             name: 'a' * 101,
-            email: 'ryskit+@example.com',
+            email: 'example+@example.com',
             password: 'pass',
             password_confirmation: 'pass',
           }
