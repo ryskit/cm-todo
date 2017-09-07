@@ -46,6 +46,42 @@ FORMAT: 1A
             + password_confirmation: 
                 + エラーメッセージ
 
+
+## ユーザーの名前・メールアドレスを更新する [/v1/settings/account]
+
+### ユーザーの名前・メールアドレスの更新 [PATCH]
+
+#### 処理概要
+
+* ユーザーの名前、もしくは、メールアドレスをリクエストすると更新される。
+* 更新に成功した場合、更新されたユーザー情報がレスポンスとして返る
+
++ Request (application/json)
+
+   + Headers
+
+       Accept: application/json
+       Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1dWlkIjoiNWIzOTg3NDEzZjUxMDA4ZTM1NjIzYzBjNjNkNGU4MWYwYTA5YjlhOWY3YTk2MjFiYWQ5MWJkMmNkZGExMWYxYTdhZWRkN2Q4Njc3MTBlZGIwMTgxMDZkN2VlYTFkM2NmMjFjZWNiZTVkMTU1YjIxOWU5YmViZDIzMTU2ODUwZjU4NjM2YWEyNTg2ZDMyNjhmNjdlOGYyNWI3NDgyMmJjZGE5YTBlNTAwNmZmNjUxNjA0OWYwOGQwZjk4MDdiMWE2YmY4NjM0NTM1ZTRiZWM0NTVmN2EzODdmOTZmODYwY2E1OGQ2YWU0ZDM0MjRlMjc0NDJhOTNmMjEwNzk2MzdkNyIsIm5hbWUiOiJyeXNraXQiLCJpc3MiOiJUb0RvIEFwcCIsInN1YiI6IlJlZnJlc2ggVG9rZW4iLCJleHAiOjE1MDQ3ODM2ODAsIm5nZiI6MTUwNDY5NzI3NSwiaWF0IjoxNTA0Njk3MjgwfQ.qygveTT7moSxtn9NupD5UbNZ9ykhViUzWxEwjdkcyNJ00Zx3phLgcx98cPqs2RvevFqmeBUBohu635FbkcqYsw
+
+   + Attributes
+        + user: 
+            + name: test user (string, optional, maximum: 100) - 名前
+            + email: test@example.com (string, optional, maximum: 255) - メールアドレス (pattern: /\A[\w\+\-\.]+[a-zA-Z\d]+@[a-zA-Z\d\-]+(\.[a-zA-Z\d\-]+)*\.[a-zA-Z]+\z/i)
+
++ Response 201 (application/json)
+
+{
+    "user": {
+        "id": 1,
+        "name": "example_user",
+        "password_digest": "$2a$10$a/KEXz.qQDsstbR6THKbAOT6sLswE.NJFIm6D1XJSnfLCKpvRKY2W",
+        "email": "example1@example.com",
+        "created_at": "2017-08-27T18:49:14.637+09:00",
+        "updated_at": "2017-09-08T01:52:27.563+09:00",
+        "uuid": "5b3987410f51008e35623c0c63d4e81f0a09b9a9f7a9621bad91bd2cdda11f1a7aedd7d867710edb018106d7eea1d3cf21cecbe5d155b219e9bebd23156850f58636aa2586d3268f67e8f25b74822bcda9a0e5006ff6516049f08d0f9807b1a6bf8634535e4bec455f7a387f96f860ca58d6ae4d3424e27442a93f21079637d7"
+    }
+}
+        
 ## ユーザーの認証・認可 [/v1/auth/authorize]
 
 ### ユーザーのアクセストークン・リフレッシュトークン取得 [POST]
