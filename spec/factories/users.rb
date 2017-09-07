@@ -15,10 +15,18 @@ FactoryGirl.define do
   end
   
   factory :updated_user_name, class: User do
-    name 'updated_example_name'
+    sequence(:name) { |n| "update_example_name_#{n}"}
+  end
+  
+  factory :invalid_updated_user_name, class: User do
+    name 'a' * 101
   end
 
   factory :updated_user_email, class: User do
-    sequence(:email) { |n| "example#{n}@example.com"}
+    sequence(:email) { |n| "update_example#{n}@example.com"}
+  end
+
+  factory :invalid_updated_user_email, class: User do
+    sequence(:email) { |n| "example#{n}+@example.com"}
   end
 end

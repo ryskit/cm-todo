@@ -91,6 +91,15 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(res_body['user']['name']).not_to eq @user[:name]
       end
       
+      it '名前の更新がエラーとなる' do
+        expect do
+          patch :update_account, params: { user: attributes_for(:invalid_updated_user_name) }
+        end.to change(User, :count).by(0)
+        expect(response).to have_http_status(:bad_request)
+        res_body = JSON.parse(response.body)
+        expect(res_body['messages']['name'].present?).to be true
+      end
+      
       it 'メールアドレスを更新する' do
         expect do
             patch :update_account, params: { user: attributes_for(:updated_user_email) }
@@ -98,6 +107,15 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect(response).to have_http_status(:ok)
         res_body = JSON.parse(response.body)
         expect(res_body['user']['email']).not_to eq @user[:email]
+      end
+      
+      it 'メールアドレスの更新がエラーとなる' do
+        expect do
+            patch :update_account, params: { user: attributes_for(:invalid_updated_user_email) }
+        end.to change(User, :count).by(0)
+        expect(response).to have_http_status(:bad_request)
+        res_body = JSON.parse(response.body)
+        expect(res_body['messages']['email'].present?).to be true
       end
       
     end
