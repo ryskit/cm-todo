@@ -6,6 +6,8 @@ Rails.application.routes.draw do
       resources :tasks
       post '/signup', to: 'users#create'
       
+      patch '/settings/account', to: 'users#update_account'
+      
       namespace :auth do
         post '/authorize', to: 'users_authorization#authorize'
         post '/token', to: 'users_authorization#refresh_access_token'

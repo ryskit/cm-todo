@@ -1,7 +1,5 @@
 class ApplicationController < ActionController::API
   
-  # rescue_from Exception, with: :render_500
-  # rescue_from Forbidden, with: :render_403
   
   private
   
@@ -11,6 +9,14 @@ class ApplicationController < ActionController::API
         code: 403,
         error: Rack::Utils::HTTP_STATUS_CODES[403],
       }, status: :forbidden
+    end
+
+    def render_404
+      render json: {
+        status: 'NG',
+        code: 404,
+        error: Rack::Utils::HTTP_STATUS_CODES[404],
+      }, status: :not_found
     end
     
     def render_500

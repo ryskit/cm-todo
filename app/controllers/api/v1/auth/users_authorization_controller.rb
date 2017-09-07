@@ -19,7 +19,6 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
   end
   
   def refresh_access_token
-    
     user = get_authenticated_user
     return render_unauthorized unless user
     
@@ -72,7 +71,7 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
 
     def get_authenticated_user
       authenticate_with_http_token do |refresh_token, options|
-        @user = User
+        return User
           .joins(:refresh_tokens)
           .where("refresh_tokens.expiration_at > ? AND refresh_tokens.token = ?", Time.now, refresh_token)
           .first

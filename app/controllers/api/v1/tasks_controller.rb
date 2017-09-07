@@ -19,7 +19,7 @@ class Api::V1::TasksController < AuthenticationController
         status: 'NG',
         code: 404,
         error: Rack::Utils::HTTP_STATUS_CODES[404]
-      }, status: 404
+      }, status: :not_found
     end
   end
 
@@ -36,7 +36,7 @@ class Api::V1::TasksController < AuthenticationController
   def update
     @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id]).first
     if @task && @task.update_attributes(task_params)
-      render json: { task: @task }, status: 200
+      render json: { task: @task }, status: :ok
     else
       render_bad_request(@task)
     end
@@ -45,7 +45,7 @@ class Api::V1::TasksController < AuthenticationController
   def destroy
     @task = Task.where("id = ? AND user_id = ?", params[:id], @user[:id]).first
     if @task && @task.destroy
-      render json: {}, status: 204
+      render json: {}, status: :no_content
     else
       render_bad_request(@task) 
     end

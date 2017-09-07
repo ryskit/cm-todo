@@ -3,22 +3,27 @@ class User < ApplicationRecord
   
   has_many :tasks
   has_many :refresh_tokens
+
+  attr_accessor :old_password, :new_password
   
   before_save :downcase_email
   before_create :create_uuid
 
   VALID_EMAIL_REGEX = /\A[\w\+\-\.]+[a-zA-Z\d]+@[a-zA-Z\d\-]+(\.[a-zA-Z\d\-]+)*\.[a-zA-Z]+\z/i
   
-  validates :name,  presence: true, length: {minimum: 1, maximum: 100}
+  validates :name,  presence: true, length: { minimum: 1, maximum: 100 }
   validates :email, presence: true,
-                    length: {maximum: 255},
+                    length: { maximum: 255 },
                     format: VALID_EMAIL_REGEX,
-                    uniqueness: {case_sensitive: false}
-  validates :password, presence: true, length: {minimum: 6}
+                    uniqueness: { case_sensitive: false }
+  validates :password,  presence: true,
+                        length: {minimum: 6},
+                        on: :create
   validates :uuid,  presence: true, 
-                    length: {is: 128},
+                    length: { is: 128, on: :create },
                     uniqueness: {case_sensitive: false},
-                    allow_nil: true
+                    allow_nil: true,
+                    on: :create 
   
   private
     
@@ -30,4 +35,11 @@ class User < ApplicationRecord
       self.uuid = SecureRandom.hex(64)
     end
   
+    def authenticated?(password)
+      BCrypt::Password.new(password_digest).is_password?(password)
+    end
+  
+    def allow_nil_old_password?
+      new_password.nil? && confirmation_password.nil?
+    end
 end
