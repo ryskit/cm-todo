@@ -36,15 +36,7 @@ class Api::V1::Auth::UsersAuthorizationController < ApplicationController
     return render_unauthorized unless user && user.authenticate(user_params[:password]) 
     
     refresh_token.update_attribute(:expiration_at, nil)
-    access_token = create_access_token(user)
-    new_refresh_token = user.refresh_tokens.create
-
-    render json: {
-      :token_type => 'bearer',
-      :access_token => access_token,
-      :refresh_token => new_refresh_token.token,
-      :refresh_token_exp => new_refresh_token.expiration_at.to_i,
-    }, status: :ok
+    render json: {}, status: :ok
   end
   
   private

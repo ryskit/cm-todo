@@ -163,18 +163,11 @@ RSpec.describe Api::V1::Auth::UsersAuthorizationController, type: :controller do
         # 同じ時刻でaccess_tokenが再生成されないようにするため
         sleep(1)
 
-        post :authorize, params: user_params
+        post :revoke, params: user_params
         expect(response).to have_http_status(:ok)
 
         res_body = JSON.parse(response.body)
-        expect(res_body['access_token'].present?).to be true
-        expect(res_body['access_token']).not_to eq @user_tokens[:access_token]
-
-        expect(res_body['refresh_token'].present?).to be true
-        expect(res_body['refresh_token']).not_to eq @user_tokens[:refresh_token]
-
-        expect(res_body['refresh_token_exp'].present?).to be true
-        expect(res_body['refresh_token_exp']).not_to eq @user_tokens[:refresh_token_exp]
+        expect(res_body.blank?).to be true
       end
     end
 
@@ -194,7 +187,8 @@ RSpec.describe Api::V1::Auth::UsersAuthorizationController, type: :controller do
         # 同じ時刻でaccess_tokenが再生成されないようにするため
         sleep(1)
 
-        post :authorize, params: user_params
+        user_params[:user][:password] = 'aaaaaaaaaaa'
+        post :revoke, params: user_params
         expect(response).to have_http_status(:unauthorized)
 
         res_body = JSON.parse(response.body)
