@@ -22,7 +22,7 @@ class User < ApplicationRecord
             uniqueness: { case_sensitive: false }
 
 
-  with_options if: :enable_password_validation do
+  with_options if: :enable_password_validation? do
     
     validates :password,
               presence: true,
@@ -68,7 +68,7 @@ class User < ApplicationRecord
       self.uuid = SecureRandom.hex(64)
     end
 
-    def enable_password_validation
+    def enable_password_validation?
       password_validation.nil? ? true : password_validation
     end
 end
