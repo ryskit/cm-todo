@@ -83,6 +83,7 @@ test:
 production:
   adapter: postgresql
   encoding: unicode
+  url: <%= ENV['DATABASE_URL'] %>
   host: <%= ENV['TODO_DATABASE_HOST'] %>
   database: <%= ENV['TODO_DATABASE'] %>
   username: <%= ENV['TODO_DATABASE_USER_NAME'] %>
