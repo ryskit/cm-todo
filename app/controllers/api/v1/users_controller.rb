@@ -22,8 +22,17 @@ class Api::V1::UsersController < AuthenticationController
   end
   
   def update_account
-    if @user.update_attributes(update_account_params) 
+    if @user.update_account(update_account_params) 
       render json: { user: @user }, status: :ok
+    else
+      render_bad_request(@user)
+    end
+  end
+  
+  def update_password
+    return render_unauthorized unless @user.authenticated?(update_password_params[:old_password])
+    if @user.update(update_password_params)
+      render json: {}, status: :ok
     else
       render_bad_request(@user)
     end
@@ -40,7 +49,7 @@ class Api::V1::UsersController < AuthenticationController
     end
   
     def update_password_params
-      params.require(:user).permit(:old_password, :new_password, :password_confirmation)
+      params.require(:user).permit(:old_password, :password, :password_confirmation)
     end
   
     def render_bad_request(user = nil)
@@ -51,5 +60,13 @@ class Api::V1::UsersController < AuthenticationController
       }
       response_body = response_body.merge({ messages: user.errors.messages }) if user
       render json: response_body, status: :bad_request
+    end
+
+    def render_unauthorized
+      render json: {
+        status: 'NG',
+        code: 401,
+        error: Rack::Utils::HTTP_STATUS_CODES[401],
+      }, status: :unauthorized
     end
 end

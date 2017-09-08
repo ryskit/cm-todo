@@ -14,6 +14,31 @@ FactoryGirl.define do
     password_confirmation 'password'
   end
   
+  factory :valid_create_user_params, class: User do
+    sequence(:name) { |n| "example_name_#{n}"}
+    sequence(:email) { |n| "example_user#{n}@example.com"}
+    password 'password'
+    password_confirmation 'password'
+  end
+  
+  factory :invalid_password_confirmation_user_params, class: User do
+    sequence(:name) { |n| "example_name_#{n}"}
+    sequence(:email) { |n| "example_user#{n}@example.com"}
+    password 'password'
+  end
+  
+  factory :valid_update_password_params, class: User do
+    old_password 'password'
+    password 'password'
+    password_confirmation 'password'
+  end
+
+  factory :invalid_update_password_params, class: User do
+    old_password "invalidpassword"
+    password "newpassword"
+    password_confirmation "newpassword"
+  end
+  
   factory :updated_user_name, class: User do
     sequence(:name) { |n| "update_example_name_#{n}"}
   end

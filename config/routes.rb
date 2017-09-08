@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       post '/signup', to: 'users#create'
       
       patch '/settings/account', to: 'users#update_account'
+      patch '/settings/password', to: 'users#update_password'
       
       namespace :auth do
         post '/authorize', to: 'users_authorization#authorize'
