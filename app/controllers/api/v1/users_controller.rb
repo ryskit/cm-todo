@@ -23,7 +23,9 @@ class Api::V1::UsersController < AuthenticationController
   
   def update_account
     if @user.update_account(update_account_params) 
-      render json: { user: @user }, status: :ok
+      render json: {
+        user: { name: @user[:name], email: @user[:email] }
+      }, status: :ok
     else
       render_bad_request(@user)
     end
@@ -32,7 +34,7 @@ class Api::V1::UsersController < AuthenticationController
   def update_password
     return render_unauthorized unless @user.authenticated?(update_password_params[:old_password])
     if @user.update(update_password_params)
-      render json: {}, status: :ok
+      render json: {}, status: :no_content
     else
       render_bad_request(@user)
     end

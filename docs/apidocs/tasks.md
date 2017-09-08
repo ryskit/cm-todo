@@ -1,4 +1,4 @@
-## タスク情報のリストを取得 [/v1/tasks{?q,title,content,checked,next_days}]
+## タスク情報のリストを取得 [/v1/tasks{?page,per,q,title,content,checked,next_days}]
 
 ### タスク情報のリスト取得 [GET]
 
@@ -9,6 +9,8 @@
 
 + Parameters
 
+    + page: 1 (number, optional) - タスクリスト表示ページ数
+    + per: 5 (number, optional) - 1ページあたりに表示するタスクの数
     + q: keyword (string, optional) - タスクのタイトル・コンテンツから部分一致するタスクを絞り込む
     + checked: true (boolean, optional) - タスクが済みかどうか
     + next_days: 7 (number, optional) - タスクの期限が設定されており、期日が何日後以内のタスクを絞り込む

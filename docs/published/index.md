@@ -54,7 +54,7 @@ FORMAT: 1A
 #### 処理概要
 
 * ユーザーの名前、もしくは、メールアドレスをリクエストすると更新される。
-* 更新に成功した場合、更新されたユーザー情報がレスポンスとして返る
+* 更新に成功した場合、ユーザーの名前、メールアドレスがレスポンスとして返る
 
 + Request (application/json)
 
@@ -72,16 +72,38 @@ FORMAT: 1A
 
 {
     "user": {
-        "id": 1,
         "name": "example_user",
-        "password_digest": "$2a$10$a/KEXz.qQDsstbR6THKbAOT6sLswE.NJFIm6D1XJSnfLCKpvRKY2W",
         "email": "example1@example.com",
-        "created_at": "2017-08-27T18:49:14.637+09:00",
-        "updated_at": "2017-09-08T01:52:27.563+09:00",
-        "uuid": "5b3987410f51008e35623c0c63d4e81f0a09b9a9f7a9621bad91bd2cdda11f1a7aedd7d867710edb018106d7eea1d3cf21cecbe5d155b219e9bebd23156850f58636aa2586d3268f67e8f25b74822bcda9a0e5006ff6516049f08d0f9807b1a6bf8634535e4bec455f7a387f96f860ca58d6ae4d3424e27442a93f21079637d7"
     }
 }
-        
+
+
+## ユーザーのパスワードを更新する [/v1/settings/password]
+
+### ユーザーのパスワード更新 [PATCH]
+
+#### 処理概要
+
+* ユーザーの古いパスワード、新しいパスワード、確認パスワードをリクエストすると更新される。
+* 更新に成功した場合、空のJSONがレスポンスとして返る
+
++ Request (application/json)
+
+   + Headers
+
+       Accept: application/json
+       Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1dWlkIjoiNWIzOTg3NDEzZjUxMDA4ZTM1NjIzYzBjNjNkNGU4MWYwYTA5YjlhOWY3YTk2MjFiYWQ5MWJkMmNkZGExMWYxYTdhZWRkN2Q4Njc3MTBlZGIwMTgxMDZkN2VlYTFkM2NmMjFjZWNiZTVkMTU1YjIxOWU5YmViZDIzMTU2ODUwZjU4NjM2YWEyNTg2ZDMyNjhmNjdlOGYyNWI3NDgyMmJjZGE5YTBlNTAwNmZmNjUxNjA0OWYwOGQwZjk4MDdiMWE2YmY4NjM0NTM1ZTRiZWM0NTVmN2EzODdmOTZmODYwY2E1OGQ2YWU0ZDM0MjRlMjc0NDJhOTNmMjEwNzk2MzdkNyIsIm5hbWUiOiJyeXNraXQiLCJpc3MiOiJUb0RvIEFwcCIsInN1YiI6IlJlZnJlc2ggVG9rZW4iLCJleHAiOjE1MDQ3ODM2ODAsIm5nZiI6MTUwNDY5NzI3NSwiaWF0IjoxNTA0Njk3MjgwfQ.qygveTT7moSxtn9NupD5UbNZ9ykhViUzWxEwjdkcyNJ00Zx3phLgcx98cPqs2RvevFqmeBUBohu635FbkcqYsw
+
+   + Attributes
+        + user: 
+            + old_password: password (string, required, minimum: 6) - 古いパスワード
+            + password: newpassword (string, required, minimum: 6, confirmation: true) - 新しいパスワード
+            + password_confirmation: newpassword (string, required, minimum: 6) - 確認用パスワード
+
++ Response 204 (application/json)
+
+{}
+
 ## ユーザーの認証・認可 [/v1/auth/authorize]
 
 ### ユーザーのアクセストークン・リフレッシュトークン取得 [POST]
@@ -165,7 +187,7 @@ FORMAT: 1A
             + refresh_token_exp (number, required)
 
 
-## タスク情報のリストを取得 [/v1/tasks{?q,title,content,checked,next_days}]
+## タスク情報のリストを取得 [/v1/tasks{?page,per,q,title,content,checked,next_days}]
 
 ### タスク情報のリスト取得 [GET]
 
@@ -176,6 +198,8 @@ FORMAT: 1A
 
 + Parameters
 
+    + page: 1 (number, optional) - タスクリスト表示ページ数
+    + per: 5 (number, optional) - 1ページあたりに表示するタスクの数
     + q: keyword (string, optional) - タスクのタイトル・コンテンツから部分一致するタスクを絞り込む
     + checked: true (boolean, optional) - タスクが済みかどうか
     + next_days: 7 (number, optional) - タスクの期限が設定されており、期日が何日後以内のタスクを絞り込む

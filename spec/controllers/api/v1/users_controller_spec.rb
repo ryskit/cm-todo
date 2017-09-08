@@ -158,7 +158,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
         expect do
           patch :update_password, params: { user: attributes_for(:valid_update_password_params) }
         end.to change(User, :count).by(0)
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:no_content)
         res_body = JSON.parse(response.body)
         expect(res_body.blank?).to be true
       end
