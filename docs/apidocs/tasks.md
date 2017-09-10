@@ -111,7 +111,7 @@
             + due_to: 2017-09-20 (string, optional) - 期日
             + checked: true (boolean, optional) - チェック(タスクが完了したかどうか)
     
-+ Response 204 (application/json)
++ Response 201 (application/json)
 
 {
 	"task": [
