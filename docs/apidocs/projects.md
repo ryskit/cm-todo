@@ -1,3 +1,39 @@
+## プロジェクトのリストを取得 [/v1/projects]
+
+### プロジェクトのリスト取得 [GET]
+
+#### 処理概要
+
+* 自ユーザーが登録したプロジェクトのみ取得できる。
+
++ Request (application/json)
+
+    + Headers
+        
+        Accept: application/json
+        Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ1dWlkIjoiNWIzOTg3NDEzZjUxMDA4ZTM1NjIzYzBjNjNkNGU4MWYwYTA5YjlhOWY3YTk2MjFiYWQ5MWJkMmNkZGExMWYxYTdhZWRkN2Q4Njc3MTBlZGIwMTgxMDZkN2VlYTFkM2NmMjFjZWNiZTVkMTU1YjIxOWU5YmViZDIzMTU2ODUwZjU4NjM2YWEyNTg2ZDMyNjhmNjdlOGYyNWI3NDgyMmJjZGE5YTBlNTAwNmZmNjUxNjA0OWYwOGQwZjk4MDdiMWE2YmY4NjM0NTM1ZTRiZWM0NTVmN2EzODdmOTZmODYwY2E1OGQ2YWU0ZDM0MjRlMjc0NDJhOTNmMjEwNzk2MzdkNyIsIm5hbWUiOiJyeXNraXQiLCJpc3MiOiJUb0RvIEFwcCIsInN1YiI6IlJlZnJlc2ggVG9rZW4iLCJleHAiOjE1MDQ3ODM2ODAsIm5nZiI6MTUwNDY5NzI3NSwiaWF0IjoxNTA0Njk3MjgwfQ.qygveTT7moSxtn9NupD5UbNZ9ykhViUzWxEwjdkcyNJ00Zx3phLgcx98cPqs2RvevFqmeBUBohu635FbkcqYsw
+
++ Response 200 (application/json)
+
+{
+    "projects": [
+        {
+            "id": 4,
+            "name": "my project1",
+            "user_id": 1,
+            "created_at": "2017-08-27T19:45:52.968+09:00",
+            "updated_at": "2017-09-04T22:17:23.692+09:00"
+        },
+        {
+            "id": 5,
+            "name": "my project2",
+            "user_id": 1,
+            "created_at": "2017-08-27T19:45:52.968+09:00",
+            "updated_at": "2017-09-04T22:17:23.692+09:00"
+        },...
+    } 
+}
+
 ## プロジェクトの新規作成 [/v1/projects/]
 
 ### プロジェクトの新規作成 [POST]

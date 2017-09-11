@@ -2,6 +2,12 @@ class Api::V1::ProjectsController < AuthenticationController
   
   before_action :authenticate
   
+  def index
+    projects = Project.where("user_id = ?", @user[:id])
+    
+    render json: { projects: projects }, status: :ok
+  end
+  
   def create
     project = @user.projects.build(project_params)
     

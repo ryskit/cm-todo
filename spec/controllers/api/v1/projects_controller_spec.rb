@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::ProjectsController, type: :controller do
 
-  TASK_SIZE = 51
+  PROJECT_SIZE = 51
 
   before :each do
     users = create_list(:user, 3)
@@ -30,6 +30,38 @@ RSpec.describe Api::V1::ProjectsController, type: :controller do
     
     controller.request.headers['Authorization'] = "Bearer #{@user_tokens[:access_token]}"
     controller.request.headers['CONTENT_TYPE'] = 'application/json'
+  end
+  
+  describe 'GET#index' do
+    
+    before :each do
+      @projects = []
+      PROJECT_SIZE.times do
+        project = @user.projects.create(attributes_for(:valid_params))
+        @projects.push project
+      end
+    end
+    
+    describe 'アクセストークンが有効な場合' do
+      it 'プロジェクトのリストを取得' do
+        get :index, params: {}
+        expect(response).to have_http_status(:ok)
+        res_body = JSON.parse(response.body)
+        expect(res_body['projects'].size).to eq PROJECT_SIZE
+      end
+    end
+    
+    describe 'アクセストークンが無効な場合' do
+      it 'unauthorized errorとなる' do
+        controller.request.headers['Authorization'] = "Bearer aaaaa"
+        get :index, params: {}
+        expect(response).to have_http_status(:unauthorized)
+        res_body = JSON.parse(response.body)
+        expect(res_body['status']).to eq 'NG'
+        expect(res_body['code']).to eq 401
+        expect(res_body['error']).to eq Rack::Utils::HTTP_STATUS_CODES[401]
+      end
+    end
   end
   
   describe 'POST#create' do
