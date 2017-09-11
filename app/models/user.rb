@@ -2,6 +2,7 @@ class User < ApplicationRecord
   has_secure_password 
   
   has_many :tasks
+  has_many :projects
   has_many :refresh_tokens
 
   attr_accessor :old_password, :password_validation

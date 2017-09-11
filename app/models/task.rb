@@ -1,5 +1,6 @@
 class Task < ApplicationRecord
-  
+  has_many :project_tasks
+  has_many :projects, through: :project_tasks
   belongs_to :user
   
   scope :by_q, -> q { where('title LIKE(?) OR content LIKE(?)', "%#{q}%", "%#{q}%") if q.present? }

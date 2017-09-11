@@ -79,6 +79,6 @@ class Api::V1::TasksController < AuthenticationController
         error: Rack::Utils::HTTP_STATUS_CODES[400],
       }
       response_body = response_body.merge({ messages: task.errors.messages }) if task
-       render json: response_body, status: :bad_request     
+      render json: response_body, status: :bad_request     
     end
 end

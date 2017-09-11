@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       
       resources :tasks
+      resources :projects
       post '/signup', to: 'users#create'
       
       patch '/settings/account', to: 'users#update_account'
